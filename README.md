@@ -1,15 +1,22 @@
 # Anomaly Detection Backend
 
+**Frontend:** [https://github.com/neelpatel2003/Anomaly-Detection](https://github.com/neelpatel2003/Anomaly-Detection)
+
+**Model:** [https://github.com/PDhvanik/Anomaly-detect-model](https://github.com/PDhvanik/Anomaly-detect-model)
+
 ## Overview
+
 This backend service captures live network traffic, analyzes it for anomalies using a pre-trained machine learning model, and exposes a REST API for controlling the capture and retrieving results. The anomaly detection logic is implemented in Python, while the backend server is built with Node.js and Express.
 
 ## Features
+
 - Start and stop live network traffic capture
 - Analyze packets for anomalies using a trained model
 - Retrieve results and protocol breakdown via API
 - Integration between Node.js and Python
 
 ## Project Structure
+
 ```
 Backend/
   |-- index.js                # Main server entry point
@@ -29,40 +36,52 @@ Backend/
 ## Setup Instructions
 
 ### Prerequisites
+
 - **Node.js** (v16+ recommended)
 - **Python** (v3.7+ recommended)
 - Python packages: `pandas`, `joblib`, `scapy`
 - The trained model and preprocessing files (`anomaly_model.pkl`, `scaler.pkl`, `encoder.pkl`) must be present in the `model/` directory.
 
 ### Install Node.js Dependencies
+
 ```bash
 npm install
 ```
 
 ### Install Python Dependencies
+
 ```bash
 pip install pandas joblib scapy
 ```
 
 ## Running the Backend
+
 Start the backend server (runs on port 3000 by default):
+
 ```bash
 npm start
 ```
 
 ## API Endpoints
+
 All endpoints are prefixed with `/api`.
 
 ### POST `/api/start`
+
 Start live network traffic capture and anomaly detection.
+
 - **Response:** `{ started: true }` or `{ running: true }`
 
 ### POST `/api/stop`
+
 Stop the live capture process.
+
 - **Response:** `{ stopped: true }` or `{ running: false }`
 
 ### GET `/api/results`
+
 Retrieve the results of analyzed packets.
+
 - **Response:**
   - `total_packets`: Total packets analyzed
   - `anomalies`: Number of detected anomalies
@@ -72,6 +91,7 @@ Retrieve the results of analyzed packets.
   - `running`: Whether the capture is currently running
 
 #### Example Response
+
 ```json
 {
   "total_packets": 1000,
@@ -88,7 +108,7 @@ Retrieve the results of analyzed packets.
       "Source Port": "0",
       "Destination Port": "0",
       "bad_packet": "0"
-    },
+    }
     // ...
   ],
   "running": false
@@ -96,14 +116,18 @@ Retrieve the results of analyzed packets.
 ```
 
 ## Output Format
+
 The results are stored in `anomaly_results.csv` with the following columns:
+
 - `Time`, `Source`, `Destination`, `Protocol`, `Length`, `Source Port`, `Destination Port`, `bad_packet`
   - `bad_packet` is `1` for anomalies, `0` for normal packets.
 
 ## Notes
+
 - The backend relies on the Python script for live packet capture and anomaly detection. Ensure Python and required packages are installed and accessible.
 - The `model/` directory must contain the trained model and preprocessing files.
 - The server uses `nodemon` for development; you can use `node index.js` for production.
 
 ## License
-ISC 
+
+ISC
