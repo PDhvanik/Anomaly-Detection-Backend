@@ -23,7 +23,7 @@ def packet_callback(packet):
     src = dst = "N/A"
     src_port = dst_port = 0
 
-    # IPv4
+    
     if packet.haslayer(IP):
         ip_layer = packet[IP]
         src = ip_layer.src
@@ -39,7 +39,7 @@ def packet_callback(packet):
             src_port = packet[UDP].sport
             dst_port = packet[UDP].dport
 
-    # IPv6
+    
     elif packet.haslayer(IPv6):
         ip_layer = packet[IPv6]
         src = ip_layer.src
@@ -55,7 +55,7 @@ def packet_callback(packet):
             src_port = packet[TCP].sport
             dst_port = packet[TCP].dport
 
-    # ARP
+    
     elif packet.haslayer(ARP):
         proto = "ARP"
         src = packet[ARP].psrc
@@ -80,9 +80,9 @@ def packet_callback(packet):
         "Destination Port": dst_port
     })
 
-    # print(f"[Python]: {packet.summary()}")
+    
 
-    # Trigger anomaly check if traffic is large
+    
     if len(traffic_data) >= 50:
         detect_anomaly(traffic_data.copy())
         traffic_data.clear()
@@ -90,30 +90,29 @@ def packet_callback(packet):
 
 def detect_anomaly(data):
     df = pd.DataFrame(data)
-
-    # Encode Protocol
+    
     protocol_encoded = encoder.transform(df[["Protocol"]])
     protocol_cols = [f"Protocol_{p}" for p in encoder.categories_[0]]
 
-    # Combine features
+    
     numeric_features = ["Length", "Source Port", "Destination Port"]
     X = pd.concat([df[numeric_features].reset_index(drop=True),
                    pd.DataFrame(protocol_encoded, columns=protocol_cols)], axis=1)
     X.fillna(0, inplace=True)
 
-    # Scale
+    
     X_scaled = scaler.transform(X)
 
-    # Predict
+    
     df["Anomaly"] = model.predict(X_scaled)
 
-    # Save
+    
     df.to_csv(RESULT_FILE, mode='a', header=not os.path.exists(
         RESULT_FILE), index=False)
     print(f"[+] {len(df)} packets analyzed and appended to {RESULT_FILE}")
 
 
-# Start sniffing
+
 try:
     print("[*] Capturing live traffic and detecting anomalies...")
     sniff(prn=packet_callback, store=0, iface=get_working_if())
